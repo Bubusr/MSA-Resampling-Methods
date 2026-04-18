@@ -28,7 +28,7 @@ Dự án nghiên cứu và thực nghiệm các phương pháp **Resampling** (T
    ```
 2. Cài đặt thư viện:
    ```bash
-   pip install numpy pandas matplotlib seaborn scikit-learn requests
+   pip install numpy pandas matplotlib seaborn scikit-learn requests gdown
    ```
 
 ## 📊 Phương pháp triển khai
