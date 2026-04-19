@@ -1,0 +1,80 @@
+\subsection{Thí nghiệm 3: Lựa chọn Mô hình (Model Selection)}
+
+\textbf{1. Mục tiêu và Bài toán Thực tế}
+
+Trong kỷ nguyên dữ liệu, việc lựa chọn một mô hình học máy không chỉ dựa trên kết quả tức thời mà còn dựa trên khả năng tổng quát hóa (generalization). Thí nghiệm này tập trung vào bài toán dự đoán hành vi khách hàng trong chiến dịch tiếp thị ngân hàng (Bank Marketing): liệu khách hàng có đăng ký khoản tiền gửi có kỳ hạn hay không. Hai mô hình đại diện được đưa ra so sánh là:
+\begin{itemize}
+    \item \textbf{Logistic Regression:} Đại diện cho nhóm mô hình tuyến tính, có độ chệch (bias) cao nhưng phương sai (variance) thấp, dễ triển khai và giải thích.
+    \item \textbf{Decision Tree:} Đại diện cho nhóm mô hình phi tuyến, có khả năng học các mẫu phức tạp (bias thấp) nhưng rất nhạy cảm với dữ liệu huấn luyện (variance cao).
+\end{itemize}
+
+\textbf{2. Phân tích lựa chọn Tập dữ liệu}
+
+Thí nghiệm sử dụng \textit{Bank Marketing Dataset}, một tập dữ liệu thực tế từ các chiến dịch gọi điện thoại trực tiếp. Đặc điểm của bộ dữ liệu này rất phù hợp để minh họa việc kết quả Accuracy có thể bị nhiễu nếu chỉ dùng một lần split.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Cột} & \textbf{Ý nghĩa} & \textbf{Ghi chú} \\ \hline
+\textbf{age} & Tuổi khách hàng & Biến định lượng \\ \hline
+\textbf{job} & Nghề nghiệp & admin, blue-collar, technician, etc. \\ \hline
+\textbf{marital} & Tình trạng hôn nhân & married, single, divorced \\ \hline
+\textbf{education} & Học vấn & primary, secondary, tertiary, unknown \\ \hline
+\textbf{balance} & Số dư tài khoản trung bình hàng năm & Đơn vị: Euro \\ \hline
+\textbf{housing} & Có vay thế chấp nhà không? & yes/no \\ \hline
+\textbf{loan} & Có vay cá nhân không? & yes/no \\ \hline
+\textbf{contact} & Hình thức liên lạc & cellular, telephone \\ \hline
+\textbf{duration} & Thời lượng cuộc gọi cuối cùng & Đơn vị: giây \\ \hline
+\textbf{campaign} & Số lần liên lạc trong chiến dịch này & Bao gồm cả lần cuối \\ \hline
+\textbf{pdays} & Số ngày trôi qua kể từ lần liên lạc trước & -1 nghĩa là chưa liên lạc \\ \hline
+\textbf{deposit} & Khách hàng có đăng ký tiền gửi không? & \textbf{Biến mục tiêu (yes/no)} \\ \hline
+\end{tabular}
+\caption{Mô tả chi tiết các biến trong Bank Marketing Dataset}
+\label{tab:bank_dataset}
+\end{table}
+
+Đặc điểm thống kê chính:
+\begin{itemize}
+    \item \textbf{Đa dạng loại biến:} Sự kết hợp giữa các biến định lượng và định tính tạo ra sự phức tạp đủ lớn để thấy sự khác biệt giữa các mô hình.
+    \item \textbf{Sự mất cân bằng nhẹ:} Phản ánh đúng bối cảnh thực tế giữa nhãn 'yes' và 'no'.
+\end{itemize}
+
+\textbf{3. Các chỉ số đo lường (Metrics)}
+
+Chúng ta sử dụng các chỉ số sau để đánh giá độ ổn định và hiệu suất mô hình:
+\begin{itemize}
+    \item \textbf{Accuracy Mean (Độ chính xác trung bình):} Hiệu suất trung bình của mô hình trên các fold (trong CV) hoặc qua các lần split.
+    \item \textbf{Accuracy Variance/Std (Độ biến thiên):} Đo lường mức độ nhạy cảm của mô hình với việc thay đổi dữ liệu huấn luyện. Phương sai cao đồng nghĩa với việc mô hình kém ổn định.
+    \item \textbf{Generalization Error Estimate:} Ước lượng sai số khi áp dụng mô hình vào dữ liệu thực tế ngoài tập huấn luyện.
+\end{itemize}
+
+\textbf{4. Kỳ vọng kết quả và Vai trò của Resampling}
+
+\begin{itemize}
+    \item \textbf{Sự bất ổn của Single Split (Train/Test split):} Kết quả Accuracy sẽ biến động mạnh khi thay đổi \texttt{random\_state}. Có thể xảy ra trường hợp mô hình A tốt hơn B ở lần chia này, nhưng lại kém hơn ở lần chia khác.
+    \item \textbf{Sự ổn định của Cross-Validation:} Cung cấp một cái nhìn toàn diện hơn về hiệu suất thông qua giá trị trung bình và phương sai của các fold. Chúng ta kì vọng thấy được mô hình nào thực sự ổn định hơn.
+    \item \textbf{Kết luận kì vọng:} Resampling (CV) giúp ta tránh việc đưa ra quyết định sai lầm khi lựa chọn mô hình chỉ dựa trên một lần chia dữ liệu may rủi.
+\end{itemize}
+
+\textbf{5. Thực hiện Thí nghiệm}
+
+\begin{enumerate}
+    \item \textbf{Tiền xử lý:} Thực hiện Label Encoding cho các biến định tính và Standard Scaling cho các biến định lượng để đảm bảo tính công bằng cho Logistic Regression.
+    \item \textbf{Đánh giá Single Split:} Chạy vòng lặp 10 lần với các hạt giống (\texttt{seeds}) khác nhau từ 10 đến 20. Ghi lại Accuracy của cả hai mô hình sau mỗi lần chia dữ liệu.
+    \item \textbf{Đánh giá Cross-Validation:} Áp dụng 10-fold Cross Validation trên toàn bộ dữ liệu. Tính toán giá trị trung bình (\textit{Mean Accuracy}) và độ lệch chuẩn (\textit{Standard Deviation}) của các fold.
+    \item \textbf{Trực quan hóa:} Sử dụng \textit{Line plot} để theo dõi biến động qua các seeds và \textit{Boxplot} để so sánh phân phối xác suất của kết quả CV.
+\end{enumerate}
+
+\textbf{6. Phân tích và Nhận xét Biểu đồ}
+
+\begin{itemize}
+    \item \textbf{Hiện tượng trong plot:} 
+    Ở biểu đồ Line plot (Single Split), ta thấy đường Accuracy của hai mô hình đan xen nhau. Tại một số Seed, Logistic Regression tốt hơn, nhưng ở các Seed khác, Decision Tree lại vọt lên dẫn trước. Khoảng dao động của Accuracy khá lớn (có thể lên tới 2-3\%). Ngược lại, ở biểu đồ Boxplot CV, ta thấy được bức tranh tổng thể. Dải Accuracy của Decision Tree thường có trung vị cao hơn một cách rõ ràng, và độ trải rộng (whisker) cho thấy rủi ro trên các tập dữ liệu con khác nhau.
+    
+    \item \textbf{Đặc điểm tập dữ liệu:} 
+    Tập dữ liệu Bank Marketing có các đặc trưng tương tác phi tuyến tính phức tạp. Điều này giải thích tại sao Decision Tree (nếu được giới hạn chiều sâu phù hợp) thường có tiềm năng đạt accuracy cao hơn Logistic Regression. Tuy nhiên, do dữ liệu có tính nhiễu, việc chỉ split một lần dễ khiến mô hình học được các mẫu đặc thù của tập train đó mà không đại diện cho toàn bộ quần thể.
+    
+    \item \textbf{Kết luận cuối cùng:} 
+    \textbf{Cross-Validation là bắt buộc}: Nếu chỉ dựa vào một lần split ngẫu nhiên, ta rất dễ đưa ra kết luận sai về việc mô hình nào tốt hơn (ví dụ: chọn Logistic Regression chỉ vì nó may mắn đạt accuracy cao ở một seed cụ thể). \textbf{Sự ổn định}: CV giúp ta ước lượng được "sai số tổng quát hóa" một cách khách quan. Trong thí nghiệm này, mặc dù Accuracy có thể biến động, nhưng trung bình của CV cho thấy Decision Tree có xu hướng hoạt động tốt hơn trên dữ liệu này, giúp ta tự tin hơn khi lựa chọn nó để triển khai thực tế.
+\end{itemize}
