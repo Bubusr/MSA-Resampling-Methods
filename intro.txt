@@ -1,0 +1,61 @@
+\subsection{Thực nghiệm và Cấu trúc Dự án}
+
+\textbf{Mục tiêu chung:} Làm cho người đọc thấy resampling thực sự đáng dùng.
+
+Chúng ta sẽ thực hiện 3 thí nghiệm, với mục đích riêng và phương pháp áp dụng riêng như sau:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Thí nghiệm} & \textbf{Mục đích} & \textbf{Phương pháp} \\ \hline
+1. Ước lượng & Ước lượng mean/median & Jackknife, Bootstrap \\ \hline
+2. Kiểm định giả thuyết & Test sự khác biệt giữa 2 nhóm & Permutation-test \\ \hline
+3. Đánh giá mô hình & Lựa chọn giữa 2 model A\&B & Cross-validation \\ \hline
+\end{tabular}
+\end{table}
+
+Mỗi thí nghiệm sẽ có:
+\begin{itemize}
+    \item Dataset riêng (cố tình chọn để lộ điểm mạnh).
+    \item So sánh giữa việc có và không Resampling method.
+\end{itemize}
+
+\textbf{Cấu trúc thư mục nguồn:}
+\begin{verbatim}
+MSA-Resampling-Methods/
+├─ Idea-thực-nghiệm.md
+├─ README.md
+├─ experiments/
+│  ├─ 1_Estimation_Lab.ipynb
+│  ├─ 2_Hypothesis_Testing.ipynb
+│  └─ 3_Model_Selection.ipynb
+├─ modules/
+│  ├─ __init__.py
+│  ├─ estimation.py
+│  ├─ testing.py
+│  └─ evaluation.py
+└─ utils/
+   ├─ __init__.py
+   └─ plotting.py
+\end{verbatim}
+
+\textbf{Chi tiết các thành phần:}
+\begin{itemize}
+    \item \texttt{Idea-thực-nghiệm.md}: Thiết kế tổng thể, kịch bản và định hướng thí nghiệm.
+    \item \texttt{README.md}: Hướng dẫn sử dụng và tổng quan dự án.
+    \item \texttt{experiments/}:
+    \begin{itemize}
+        \item \texttt{1\_Estimation\_Lab.ipynb}: So sánh Naive, Jackknife và Bootstrap trong ước lượng.
+        \item \texttt{2\_Hypothesis\_Testing.ipynb}: Kiểm định giả thuyết bằng Permutation test và T-test.
+        \item \texttt{3\_Model\_Selection.ipynb}: Đánh giá ổn định mô hình qua CV và LOOCV.
+    \end{itemize}
+    \item \texttt{modules/}:
+    \begin{itemize}
+        \item \texttt{estimation.py}: Logic Jackknife và Bootstrap cho ước lượng.
+        \item \texttt{testing.py}: Logic Permutation test và tính p-value.
+        \item \texttt{evaluation.py}: Logic đánh giá độ ổn định mô hình (CV, LOOCV).
+    \end{itemize}
+    \item \texttt{utils/plotting.py}: Các hàm vẽ biểu đồ phân tích và so sánh
+    \item \texttt{utils/metrics.py}: Các hàm tính chỉ số (bias, variance, se, ci, p-value...)   
+\end{itemize}

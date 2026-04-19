@@ -1,0 +1,67 @@
+\subsection{Thí nghiệm 1: Ước lượng Hiệu quả Điều trị (Estimation Lab)}
+
+\textbf{1. Đại lượng đại diện (Proxy) và Phép đo hiệu quả}
+
+Trong bối cảnh đánh giá hiệu quả của một loại thuốc giảm đau mới, việc xác định các đại lượng thống kê phù hợp là điều kiện tiên quyết để đưa ra kết luận khoa học. 
+\begin{itemize}
+    \item \textbf{Đo lường hiệu quả trung bình:} Để xác định mức độ giảm đau kỳ vọng của một bệnh nhân, ta sử dụng \textit{Số trung bình (Mean)} hoặc \textit{Trung vị (Median)}. Trong đó, số trung bình cung cấp cái nhìn tổng thể về hiệu suất, còn trung vị giúp hạn chế ảnh hưởng của các giá trị cực biên (outliers).
+    \item \textbf{Đánh giá độ tin cậy của ước lượng:} Để biết liệu ước lượng từ mẫu có thực sự đáng tin cậy khi áp dụng cho quần thể hay không, chúng ta cần đo lường \textit{Sai số chuẩn (Standard Error - SE)} và \textit{Khoảng tin cậy (Confidence Interval - CI)}. Sai số chuẩn càng nhỏ cho thấy ước lượng càng ổn định; trong khi khoảng tin cậy (thường là 95\%) cung cấp một phạm vi giá trị mà tham số thực của quần thể có khả năng cao sẽ nằm trong đó.
+\end{itemize}
+
+\textbf{2. Phân tích lựa chọn Tập dữ liệu}
+
+Thí nghiệm sử dụng tập dữ liệu \textit{Medical Cost Personal Dataset}, trong đó biến \texttt{charges} (chi phí y tế) được dùng làm đại diện (proxy) cho mức độ can thiệp y tế hoặc hiệu quả điều trị. Việc lựa chọn tập dữ liệu này dựa trên các đặc điểm thống kê điển hình sau:
+\begin{itemize}
+    \item \textbf{Phân phối lệch phải mạnh (Heavy Right-Skew):} Cột \texttt{charges} không tuân theo phân phối chuẩn mà bị lệch phải cực mạnh. Phần lớn bệnh nhân có chi phí thấp (tập trung quanh ngưỡng 2,000 -- 15,000 USD), nhưng có một "đuôi" dài các bệnh nhân có chi phí rất cao.
+    \item \textbf{Sự hiện diện của Outliers:} Các ngoại lệ xuất hiện rõ rệt ở dải chi phí từ 30,000 USD đến hơn 60,000 USD. Những giá trị này sẽ gây nhiễu nghiêm trọng cho các phương pháp ước lượng truyền thống (Naive) trên mẫu nhỏ ($n=30$), làm cho \textit{Mean} bị kéo về phía các giá trị cực lớn và dẫn đến \textit{SE} không ổn định.
+\end{itemize}
+
+\textbf{3. Kỳ vọng kết quả và Phân tích so sánh}
+
+Chúng ta đặt kỳ vọng vào sự khác biệt rõ rệt giữa các phương pháp Resampling so với cách tiếp cận truyền thống:
+\begin{itemize}
+    \item \textbf{Naive Estimate:} Dự kiến sẽ cho ra một ước lượng điểm có sai số lớn và không cung cấp được khoảng tin cậy vững chãi do chỉ dựa trên một mẫu dữ liệu duy nhất.
+    \item \textbf{Jackknife:} Kỳ vọng sẽ ước lượng tốt \textit{Bias} và \textit{SE} cho \textit{Mean}. Tuy nhiên, đối với các estimator không trơn như \textit{Median}, Jackknife có khả năng đưa ra kết quả thiếu chính xác do bản chất "leave-one-out" không thay đổi được cấu trúc của trung vị một cách hiệu quả.
+    \item \textbf{Bootstrap:} Được kỳ vọng là phương pháp mạnh mẽ nhất. Thông qua việc tái chọn mẫu 1,000 lần, Bootstrap sẽ xây dựng được phân phối thực nghiệm của estimator, từ đó cung cấp \textit{SE} và \textit{CI} có độ chính xác cao cho cả \textit{Mean} và \textit{Median}.
+    \item \textbf{Ước tính định lượng:} Với mẫu $n=30$, chúng ta dự kiến giá trị \textit{Mean} sẽ dao động quanh mức 13,000 USD với \textit{SE} khoảng 800 -- 1,200 USD. Khoảng tin cậy 95\% từ Bootstrap dự kiến sẽ hẹp hơn và phản ánh đúng bản chất dữ liệu hơn so với các phương pháp dựa trên lý thuyết phân phối chuẩn thông thường.
+\end{itemize}
+
+\textbf{4. Thực hiện Thí nghiệm}
+
+Quá trình thực nghiệm được triển khai theo các bước chuẩn hóa để đảm bảo tính khách quan và khả năng tái lập:
+\begin{enumerate}
+    \item \textbf{Trích xuất dữ liệu:} Một mẫu ngẫu nhiên gồm $n=50$ quan sát được rút ra từ cột \texttt{charges} của tập dữ liệu gốc để làm dữ liệu đầu vào.
+    \item \textbf{Tính toán chỉ số gốc (Naive):} Tính toán trực tiếp \textit{Mean} và \textit{Median} trên mẫu để làm mốc so sánh. Đối với \textit{Mean}, sai số chuẩn lý thuyết ($s/\sqrt{n}$) được sử dụng làm baseline.
+    \item \textbf{Thực hiện Jackknife:} Triển khai vòng lặp $n$ lần, mỗi lần loại bỏ một quan sát (leave-one-out) để tính toán biến thiên của các chỉ số.
+    \item \textbf{Thực hiện Bootstrap:} Tiến hành tái chọn mẫu có hoàn lại (resampling with replacement) với số lượng $B=2000$ lần để xây dựng phân phối thực nghiệm cho cả \textit{Mean} và \textit{Median}.
+    \item \textbf{Tính toán SE và CI:} Từ phân phối estimator, ta tính các đại lượng (SE, CI, bias, variance...) đẻ rút ra nhận xét về các phương pháp.
+\end{enumerate}
+
+\textbf{5. Phân tích và Nhận xét Biểu đồ}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/ex1_mean_dist.png}
+    \caption{Phân phối của \textit{Mean} sử dụng Jackknife và Bootstrap.}
+    \label{fig:exp1_mean_dist}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/ex1_median_dist.png}
+    \caption{Phân phối của \textit{Median} sử dụng Jackknife và Bootstrap.}
+    \label{fig:exp1_median_dist}
+\end{figure}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/ex1_mean_SE.png}
+    \caption{So sánh Standard Error giữa Jackknife và Bootstrap cho \textit{Mean}.}
+    \label{fig:exp1_mean_se}
+\end{figure}    
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/ex1_median_SE.png}
+    \caption{So sánh Standard Error giữa Jackknife và Bootstrap cho \textit{Median}.}
+    \label{fig:exp1_median_se}
+\end{figure}
+    
+
+
