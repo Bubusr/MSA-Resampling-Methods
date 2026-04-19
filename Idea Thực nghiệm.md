@@ -68,23 +68,25 @@ Dataset: [Medical Cost Personal dataset](https://www.kaggle.com/datasets/miricho
 - Rút ra nhận xét: Jackknife hoạt động kém (median không smooth), Bootstrap hoạt động tốt + CODE vẽ biểu đồ để chứng minh (vd như distribution estimator bằng histrogram)
 - Rút ra nhận xét trong đời sống
 
-# 2. Kiểm định thuốc mới (Permutation test)
+# 2. Kiểm định giả thuyết hiệu quả (Permutation test)
 ___
 ## 2.1 Mục tiêu + mô tả dataset
 
 - Bối cảnh thực tế: so sánh:
-	- Nhóm A: thuốc cũ
-	- Nhóm B: thuốc mới
-👉 Câu hỏi: “Thuốc mới có thực sự tốt hơn không?”
+	- Nhóm A: Người hút thuốc (Smoker)
+	- Nhóm B: Người không hút thuốc (Non-Smoker)
+👉 Phán xét bề mặt: "Trung bình chi phí của Smoker lớn hơn Non-smoker rất nhiều (A > B)."
+👉 Câu hỏi nghi ngờ: “Sự chênh lệch bề mặt này là quy luật thực thụ hay chỉ do xui xẻo lấy trúng mẫu nhiễu?”
 
 - Nhắc lại về toàn bộ quy trình kiếm định giả thuyết thường gặp
-- Mục tiêu là Chứng minh: t-test thất bại khi giả định sai, trong khi đó Permutation test vẫn đúng
-- Dataset: [Covid-19 Clinical Trial dataset](https://www.kaggle.com/datasets/parulpandey/covid19-clinical-trials-dataset)
-	-  Mô tả dataset (kích thước, ý nghĩa mỗi cột, mỗi nhãn)
-	- Dựa vào đặc điểm nào mà chọn dataset này?
-	- CODE: đoạn code vẽ biểu đồ bằng matplotlib để thể hiện đặc điểm đó
-- Metric: p-value, false positive rate (giải thích ngắn gọn tại sao lại dùng 2 metrics này)
-- Ta kỳ vọng gì ở kết quả? (Khi data “đẹp” → giống nhau; Khi data “bẩn” → permutation đáng tin hơn....)
+- Mục tiêu là Chứng minh: t-test thất bại khi bóp méo xác suất ngẫu nhiên do dữ liệu vi phạm phân phối, trong khi đó Permutation test đập tan sự nghi ngờ một cách hoàn toàn chuẩn xác và độc lập giả định.
+- Dataset: Tái sử dụng [Medical Cost Personal dataset](https://www.kaggle.com/datasets/mirichoi0218/insurance)
+	-  Mô tả dataset (kích thước, trích hai nhóm Smoker và Non-Smoker làm Feature X, chi phí bảo hiểm làm nhãn Y)
+	- Dựa vào đặc điểm nào mà chọn dataset này? (Tính dị phương sai cực mạnh: phân bố chi phí của người không hút thuốc thì chụm lại, còn người hút thuốc thì tản mác hỗn loạn $\to$ hoàn hảo để bẻ khóa T-Test).
+	- CODE: đoạn code vẽ biểu đồ bằng matplotlib để thể hiện sự bất đồng nhất phương sai đặc điểm đó.
+- Metric: P-value, false positive rate (giải thích ngắn gọn tại sao lại dùng 2 metrics này làm rào cản đo lường "xác suất do ăn may").
+- Ta kỳ vọng gì ở kết quả? (Khi data chứa đầy nhiễu như tiền viện phí $\to$ T-test phán quyết sai hoặc lố; Khi hoán vị (Permutation test) $\to$ tính toán chính xác xác suất ngẫu nhiên và đưa ra kết luận đáng tin cậy).
+
 ## 2.2 Tiến hành thí nghiệm
 
 - So sánh:
@@ -92,12 +94,12 @@ ___
 |Method|Giả định|
 |---|---|
 |t-test|normal + equal variance|
-|permutation|không cần giả định|
-- Đặt giả thuyết H_0
-- Mô tả quá trình permutation-test từng bước (chia nhãn, xáo lại...)
+|permutation|không cần giả định, trực tiếp xáo trộn dữ liệu thực tế|
+- Đặt giả thuyết H_0: "Hút thuốc không liên quan đến chi phí y tế. Cả hai nhóm tốn như nhau, chênh lệch chỉ do ngẫu nhiên bốc mẫu."
+- Mô tả quá trình permutation-test từng bước (chia nhãn, xáo lại 10,000 lần, tính chênh lệch ảo để phản bác sự chênh lệch thật...)
 - Đi kèm CODE và kết quả tính toán
-- Vẽ đồ thị mình họa
-- Rút ra nhận xét => chấp nhận hay bác bỏ giả thuyết H_0
+- Vẽ đồ thị mình họa quá trình Permutation
+- Rút ra nhận xét => Chênh lệch thật vượt xa tỷ lệ phân bố ảo, qua đó đập tan sự nghi ngờ, bác bỏ mạnh mẽ giả thuyết H_0.
 
 # 3. Đánh giá mô hình (Cross-Validation)
 ___
