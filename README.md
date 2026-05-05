@@ -35,6 +35,3 @@ Dự án nghiên cứu và thực nghiệm các phương pháp **Resampling** (T
 - **Estimation**: Tính toán bias, variance, SE. Chứng minh sự khác biệt giữa Jackknife và Bootstrap.
 - **Hypothesis Testing**: Sử dụng Permutation test để kiểm định p-value mà không phụ thuộc vào giả định phân phối.
 - **Model Evaluation**: So sánh phương sai của các phương pháp đánh giá mô hình (Single Split vs K-Fold CV).
-
----
-*Dự án hoàn thiện bởi AI Assistant - Antigravity.*
